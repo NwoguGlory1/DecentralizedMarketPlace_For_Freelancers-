@@ -582,6 +582,18 @@
 )
 
 
+;; Helper function to count completed milestones
+(define-private (get-completed-milestone-count (job-id uint) (current-id uint) (count uint))
+    (match (map-get? milestone-tracking {job-id: job-id, milestone-id: current-id})
+        milestone (if (is-eq (get status milestone) u3)
+            (get-completed-milestone-count job-id (+ current-id u1) (+ count u1))
+            (get-completed-milestone-count job-id (+ current-id u1) count)
+        )
+        count
+    )
+)
+
+
 
 
 
