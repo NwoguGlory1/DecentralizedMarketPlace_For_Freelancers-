@@ -255,3 +255,36 @@
 )
 
 
+;; Mark job as complete (by client)
+(define-public (complete-job (job-id uint))
+    (let
+        (
+            (job (unwrap! (map-get? jobs job-id) err-not-found))
+            (escrow-amount (unwrap! (map-get? escrow-balance job-id) err-not-found))
+        )
+        (asserts! (is-eq tx-sender (get client job)) err-unauthorized)
+        (asserts! (is-eq (get status job) u2) err-invalid-status)
+        
+        ;; Check if job was assigned to a team
+        (match (map-get? team-assignments job-id)
+            team-assignment (try!
+                (release-payment-to-team job-id escrow-amount team-assignment))
+            ;; If not a team assignment, pay the individual freelancer
+            (try! (as-contract (stx-transfer? 
+                escrow-amount 
+                tx-sender 
+                (unwrap! (get freelancer job) err-not-found)
+            )))
+        )
+        
+        ;; Update job status
+        (map-set jobs job-id (merge job {status: u3}))
+        
+        ;; Clear escrow
+        (map-delete escrow-balance job-id)
+        (ok true)
+    )
+)
+
+
+
