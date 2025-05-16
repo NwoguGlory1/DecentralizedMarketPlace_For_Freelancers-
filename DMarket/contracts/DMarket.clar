@@ -56,3 +56,37 @@
     uint
     uint
 )
+
+;; Subscription system for featured job listings
+(define-map subscriptions
+    principal
+    {
+        level: uint,  ;; 1-Basic, 2-Premium, 3-Enterprise
+        expiry: uint,
+        featured-jobs-remaining: uint
+    }
+)
+
+;; Direct Job Invitations
+(define-map job-invitations
+    uint  ;; invitation-id
+    {
+        job-id: uint,
+        client: principal,
+        freelancer: principal,
+        message: (string-ascii 200),
+        status: uint  ;; 1-Pending, 2-Accepted, 3-Declined
+    }
+)
+
+;; Skill Verification System
+(define-map verified-skills
+    uint  ;; verification-id
+    {
+        freelancer: principal,
+        skill: (string-ascii 50),
+        verifier: principal,
+        verified-at: uint,
+        level: uint  ;; 1-Beginner, 2-Intermediate, 3-Expert, 4-Master
+    }
+)
