@@ -415,6 +415,81 @@
     }
 )
 
+;; Rate a completed job
+(define-public (rate-job (job-id uint) (rating uint))
+    (let
+        (
+            (job (unwrap! (map-get? jobs job-id) err-not-found))
+            (rater tx-sender)
+        )
+        (asserts! (is-eq (get status job) u3) err-invalid-status)
+        (asserts! (or 
+            (is-eq rater (get client job))
+            (is-eq rater (unwrap! (get freelancer job) err-not-found))
+        ) err-unauthorized)
+        (asserts! (and (>= rating u1) (<= rating u5)) err-invalid-rating)
+        
+        (let
+            (
+                (target (if (is-eq rater (get client job)) 
+                    (unwrap! (get freelancer job) err-not-found)
+                    (get client job)))
+                (current-rating (default-to 
+                    {total-jobs: u0, completed-jobs: u0, average-rating: u0, ratings-count: u0} 
+                    (map-get? user-ratings target)))
+            )
+            (map-set user-ratings target {
+                total-jobs: (+ (get total-jobs current-rating) u1),
+                completed-jobs: (+ (get completed-jobs current-rating) u1),
+                average-rating: (/ 
+                    (+ (* (get average-rating current-rating) (get ratings-count current-rating)) rating)
+                    (+ (get ratings-count current-rating) u1)
+                ),
+                ratings-count: (+ (get ratings-count current-rating) u1)
+            })
+        )
+        (ok true)
+    )
+)
+
+;; Get user rating
+(define-read-only (get-user-rating (user principal))
+    (map-get? user-ratings user)
+)
+
+;; Additional Data Maps
+(define-map job-ratings
+    {job-id: uint, rater: principal}
+    {rating: uint, comment: (string-ascii 200)}
+)
+
+(define-map freelancer-skills
+    principal
+    (list 10 (string-ascii 50))
+)
+
+(define-map user-profiles
+    principal
+    {
+        name: (string-ascii 50),
+        bio: (string-ascii 500),
+        contact: (string-ascii 100),
+        hourly-rate: uint,
+        total-earnings: uint
+    }
+)
+
+(define-map milestone-tracking
+    {job-id: uint, milestone-id: uint}
+    {
+        description: (string-ascii 200),
+        amount: uint,
+        status: uint,  ;; 1-Pending, 2-Completed, 3-Paid
+        deadline: uint
+    }
+)
+
+
 
 
 
