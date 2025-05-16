@@ -515,6 +515,31 @@
 )
 
 
+;; Read-only function to verify profile
+(define-read-only (get-profile (user principal))
+    (default-to
+        {
+            name: "", 
+            bio: "", 
+            contact: "", 
+            hourly-rate: u0, 
+            total-earnings: u0
+        }
+        (map-get? user-profiles user)
+    )
+)
+
+;; Update freelancer skills
+(define-public (update-skills (skills (list 10 (string-ascii 50))))
+    (ok (map-set freelancer-skills tx-sender skills))
+)
+
+;; Helper function to get amount from milestone
+(define-private (get-amount (milestone {description: (string-ascii 200), amount: uint, status: uint, deadline: uint}))
+    (get amount milestone)
+)
+
+
 
 
 
