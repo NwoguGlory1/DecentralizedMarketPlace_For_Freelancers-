@@ -404,6 +404,17 @@
     )
 )
 
+;; Rating and Reputation System
+(define-map user-ratings
+    principal
+    {
+        total-jobs: uint,
+        completed-jobs: uint,
+        average-rating: uint,
+        ratings-count: uint
+    }
+)
+
 
 
 
