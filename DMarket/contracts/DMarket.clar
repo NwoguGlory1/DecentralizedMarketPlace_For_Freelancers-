@@ -539,6 +539,48 @@
     (get amount milestone)
 )
 
+;; Helper function to build milestone list - needed by other functions
+(define-private (get-milestone-list 
+    (job-id uint) 
+    (current-id uint) 
+    (acc (list 5 {milestone-id: uint, description: (string-ascii 200), amount: uint, status: uint, deadline: uint}))
+)
+    (match (map-get? milestone-tracking {job-id: job-id, milestone-id: current-id})
+        milestone (if (< (len acc) u5)
+            (get-milestone-list 
+                job-id 
+                (+ current-id u1)
+                (unwrap! (as-max-len? 
+                    (append 
+                        acc
+                        {
+                            milestone-id: current-id,
+                            description: (get description milestone),
+                            amount: (get amount milestone),
+                            status: (get status milestone),
+                            deadline: (get deadline milestone)
+                        }
+                    )
+                    u5
+                ) 
+                acc)
+            )
+            acc
+        )
+        acc
+    )
+)
+
+;; Get all milestones for a job
+(define-read-only (get-job-milestones (job-id uint))
+    (let
+        (
+            (milestone-list (list))
+        )
+        (ok (get-milestone-list job-id u0 milestone-list))
+    )
+)
+
 
 
 
