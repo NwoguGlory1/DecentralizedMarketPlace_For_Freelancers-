@@ -336,5 +336,17 @@
     )
 )
 
+;; Dispute Resolution Mechanism
+(define-map disputes
+    uint
+    {
+        job-id: uint,
+        disputant: principal,
+        reason: (string-ascii 500),
+        status: uint,  ;; 1-Pending, 2-Resolved, 3-Closed
+        arbitrator: (optional principal)
+    }
+)
+
 
 
