@@ -287,4 +287,32 @@
 )
 
 
+;; Private helper to release payment to team members
+(define-private (release-payment-to-team (job-id uint) (amount uint) (assignment {team-id: uint, payment-splits: (list 10 {member: principal, percentage: uint})}))
+    (fold release-payment-to-member (get payment-splits assignment) (ok amount))
+)
+
+;; Helper to pay each team member
+(define-private (release-payment-to-member 
+    (split {member: principal, percentage: uint}) 
+    (result (response uint uint))
+)
+    (match result
+        amount (let
+            (
+                (member-amount (/ (* amount (get percentage split)) u100))
+            )
+            (if (> member-amount u0)
+                (begin
+                    (try! (as-contract (stx-transfer? member-amount tx-sender (get member split))))
+                    (ok (- amount member-amount))
+                )
+                (ok amount)
+            )
+        )
+        error (err error)
+    )
+)
+
+
 
