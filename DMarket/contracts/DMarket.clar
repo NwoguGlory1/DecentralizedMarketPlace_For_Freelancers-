@@ -314,5 +314,19 @@
     )
 )
 
+;; Cancel job (only if not started)
+(define-public (cancel-job (job-id uint))
+    (let
+        (
+            (job (unwrap! (map-get? jobs job-id) err-not-found))
+        )
+        (asserts! (is-eq tx-sender (get client job)) err-unauthorized)
+        (asserts! (is-eq (get status job) u1) err-invalid-status)
+        
+        (map-set jobs job-id (merge job {status: u4}))
+        (ok true)
+    )
+)
+
 
 
