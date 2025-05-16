@@ -174,4 +174,39 @@
 )
 
 
+;; Public functions
+
+;; Post a new job
+(define-public (post-job (title (string-ascii 100)) (description (string-ascii 500)) (budget uint) (deadline uint))
+    (let
+        (
+            (job-id (var-get next-job-id))
+        )
+        (asserts! (> budget u0) err-invalid-amount)
+        (asserts! (> deadline block-height) err-past-deadline)
+        
+        (map-set jobs job-id {
+            client: tx-sender,
+            title: title,
+            description: description,
+            budget: budget,
+            freelancer: none,
+            status: u1,
+            deadline: deadline,
+            created-at: block-height,
+            is-featured: false
+        })
+        
+        ;; Initialize smart deadline
+        (map-set smart-deadlines job-id {
+            original-deadline: deadline,
+            extensions: (list),
+            current-deadline: deadline
+        })
+        
+        (var-set next-job-id (+ job-id u1))
+        (ok job-id)
+    )
+)
+
 
