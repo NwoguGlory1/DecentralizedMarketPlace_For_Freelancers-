@@ -131,3 +131,47 @@
     }
 )
 
+;; Read-only functions
+
+(define-read-only (get-job (job-id uint))
+    (map-get? jobs job-id)
+)
+
+(define-read-only (get-bid (job-id uint) (freelancer principal))
+    (map-get? bids {job-id: job-id, freelancer: freelancer})
+)
+
+(define-read-only (get-escrow-balance (job-id uint))
+    (default-to u0 (map-get? escrow-balance job-id))
+)
+
+(define-read-only (get-subscription (user principal))
+    (map-get? subscriptions user)
+)
+
+(define-read-only (get-invitation (invitation-id uint))
+    (map-get? job-invitations invitation-id)
+)
+
+(define-read-only (get-verified-skill (verification-id uint))
+    (map-get? verified-skills verification-id)
+)
+
+(define-read-only (get-team (team-id uint))
+    (map-get? teams team-id)
+)
+
+(define-read-only (get-team-assignment (job-id uint))
+    (map-get? team-assignments job-id)
+)
+
+(define-read-only (get-referral (referrer principal) (referee principal))
+    (map-get? referrals {referrer: referrer, referee: referee})
+)
+
+(define-read-only (get-smart-deadline (job-id uint))
+    (map-get? smart-deadlines job-id)
+)
+
+
+
