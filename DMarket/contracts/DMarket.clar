@@ -489,6 +489,31 @@
     }
 )
 
+;; Create or update user profile
+(define-public (update-profile 
+    (name (string-ascii 50)) 
+    (bio (string-ascii 500))
+    (contact (string-ascii 100))
+    (hourly-rate uint)
+)
+    (let
+        (
+            (existing-profile (map-get? user-profiles tx-sender))
+            (current-earnings (match existing-profile
+                profile (get total-earnings profile)
+                u0
+            ))
+        )
+        (ok (map-set user-profiles tx-sender {
+            name: name,
+            bio: bio,
+            contact: contact,
+            hourly-rate: hourly-rate,
+            total-earnings: current-earnings
+        }))
+    )
+)
+
 
 
 
