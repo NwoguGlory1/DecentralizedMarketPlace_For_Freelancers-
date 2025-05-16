@@ -593,6 +593,20 @@
     )
 )
 
+;; Helper function to check if all milestones are completed
+(define-private (all-milestones-completed (job-id uint))
+    (let
+        (
+            (job (unwrap! (map-get? jobs job-id) err-not-found))
+            (total-milestones (len (unwrap! (get-job-milestones job-id) false)))
+            (completed-milestones (get-completed-milestone-count job-id u0 u0))
+        )
+        (is-eq total-milestones completed-milestones)
+    )
+)
+
+
+
 
 
 
