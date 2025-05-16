@@ -90,3 +90,24 @@
         level: uint  ;; 1-Beginner, 2-Intermediate, 3-Expert, 4-Master
     }
 )
+
+;; Freelancer Teams/Collaboration
+(define-map teams
+    uint  ;; team-id
+    {
+        name: (string-ascii 50),
+        leader: principal,
+        members: (list 10 principal),
+        created-at: uint
+    }
+)
+
+;; Team Assignments for Jobs
+(define-map team-assignments
+    uint  ;; job-id
+    {
+        team-id: uint,
+        payment-splits: (list 10 {member: principal, percentage: uint})
+    }
+)
+
