@@ -111,3 +111,23 @@
     }
 )
 
+;; Referral System
+(define-map referrals
+    {referrer: principal, referee: principal}
+    {
+        created-at: uint,
+        status: uint,  ;; 1-Pending, 2-Completed
+        reward: uint
+    }
+)
+
+;; Smart Deadlines
+(define-map smart-deadlines
+    uint  ;; job-id
+    {
+        original-deadline: uint,
+        extensions: (list 5 {reason: (string-ascii 100), length: uint}),
+        current-deadline: uint
+    }
+)
+
