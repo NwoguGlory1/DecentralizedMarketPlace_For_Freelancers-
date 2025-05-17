@@ -604,10 +604,3 @@
         (is-eq total-milestones completed-milestones)
     )
 )
-
-
-
-
-
-
-
