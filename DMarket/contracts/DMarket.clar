@@ -25,7 +25,6 @@
 (define-data-var next-invitation-id uint u1)
 (define-data-var next-verification-id uint u1)
 
-
 ;; Job Details Map
 (define-map jobs
     uint
@@ -173,7 +172,6 @@
     (map-get? smart-deadlines job-id)
 )
 
-
 ;; Public functions
 
 ;; Post a new job
@@ -209,7 +207,6 @@
     )
 )
 
-
 ;; Submit a bid for a job
 (define-public (submit-bid (job-id uint) (amount uint) (proposal (string-ascii 500)))
     (let
@@ -227,7 +224,6 @@
         (ok true)
     )
 )
-
 
 ;; Accept a bid and fund escrow
 (define-public (accept-bid (job-id uint) (freelancer principal))
@@ -253,7 +249,6 @@
         (ok true)
     )
 )
-
 
 ;; Mark job as complete (by client)
 (define-public (complete-job (job-id uint))
@@ -285,7 +280,6 @@
         (ok true)
     )
 )
-
 
 ;; Private helper to release payment to team members
 (define-private (release-payment-to-team (job-id uint) (amount uint) (assignment {team-id: uint, payment-splits: (list 10 {member: principal, percentage: uint})}))
@@ -514,7 +508,6 @@
     )
 )
 
-
 ;; Read-only function to verify profile
 (define-read-only (get-profile (user principal))
     (default-to
@@ -581,7 +574,6 @@
     )
 )
 
-
 ;; Helper function to count completed milestones
 (define-private (get-completed-milestone-count (job-id uint) (current-id uint) (count uint))
     (match (map-get? milestone-tracking {job-id: job-id, milestone-id: current-id})
@@ -604,3 +596,33 @@
         (is-eq total-milestones completed-milestones)
     )
 )
+
+;; Helper function to create milestones recursively
+(define-private (create-milestones (job-id uint) (milestones (list 5 {description: (string-ascii 200), amount: uint, deadline: uint})) (milestone-id uint))
+    (match (element-at milestones milestone-id)
+        milestone (begin
+            (map-set milestone-tracking 
+                {job-id: job-id, milestone-id: milestone-id}
+                {
+                    description: (get description milestone),
+                    amount: (get amount milestone),
+                    status: u1,
+                    deadline: (get deadline milestone)
+                }
+            )
+            (if (< (+ milestone-id u1) (len milestones))
+                (create-milestones job-id milestones (+ milestone-id u1))
+                (ok true)
+            )
+        )
+        (ok true)
+    )
+)
+
+;; Post job with milestones
+(define-public (post-job-with-milestones 
+    (title (string-ascii 100)) 
+    (description (string-ascii 500)) 
+    (budget uint) 
+    (deadline uint)
+    (milestone)))
