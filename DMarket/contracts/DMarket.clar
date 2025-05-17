@@ -625,4 +625,4 @@
     (description (string-ascii 500)) 
     (budget uint) 
     (deadline uint)
-    (milestone)))q
+    (milestone)))
